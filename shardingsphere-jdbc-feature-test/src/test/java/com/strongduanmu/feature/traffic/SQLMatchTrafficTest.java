@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Traffic test.
  */
-public class TrafficTest {
+public class SQLMatchTrafficTest {
     
     private Connection connection;
         
@@ -67,6 +68,18 @@ public class TrafficTest {
             System.out.println();
         }
         assertThat(count, is(1));
+    }
+    
+    @Test
+    public void testSQLMatchTrafficWhenUseStatementAlgorithmMatch() throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.execute("UPDATE t_order SET content = CONCAT(content, '999') WHERE user_id = 1;");
+    }
+    
+    @Test
+    public void testSQLMatchTrafficWhenUseStatementAlgorithmNotMatch() throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.execute("UPDATE t_order SET content = CONCAT(content, '999') WHERE content = '111' AND user_id = 1;");
     }
     
     @After
