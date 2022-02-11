@@ -1,6 +1,7 @@
-package com.strongduanmu.feature.traffic;
+package com.strongduanmu.feature.traffic.sql;
 
 import com.google.common.collect.Sets;
+import com.strongduanmu.feature.traffic.AbstractTrafficTest;
 import org.junit.Test;
 
 import java.sql.PreparedStatement;

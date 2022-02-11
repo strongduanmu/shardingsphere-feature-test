@@ -53,6 +53,29 @@ public abstract class AbstractTrafficTest {
         return connection.createStatement();
     }
     
+    /**
+     * Set auto commit.
+     * 
+     * @param autoCommit auto commit 
+     */
+    protected void setAutoCommit(boolean autoCommit) throws SQLException {
+        connection.setAutoCommit(autoCommit);
+    }
+    
+    /**
+     * commit.
+     */
+    protected void commit() throws SQLException {
+        connection.commit();
+    }
+    
+    /**
+     * rollback.
+     */
+    protected void rollback() throws SQLException {
+        connection.rollback();
+    }
+    
     @After
     public void cleanUp() throws SQLException {
         connection.close();
