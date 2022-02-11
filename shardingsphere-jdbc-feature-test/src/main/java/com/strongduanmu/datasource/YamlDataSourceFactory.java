@@ -21,6 +21,8 @@ public final class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/sharding-tables.yaml"));
             case SHARDING_DATABASES_AND_TABLES:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/sharding-databases-tables.yaml"));
+            case MODE_SHARDING_DATABASES_AND_TABLES:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/mode-sharding-databases-tables.yaml"));
             case REPLICA_QUERY:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/replica-query.yaml"));
             case READ_WRITE_SPLITTING:

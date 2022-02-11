@@ -23,5 +23,7 @@ public enum SchemaFeatureType {
     
     ENCRYPT,
     
-    SHADOW
+    SHADOW,
+    
+    MODE_SHARDING_DATABASES_AND_TABLES
 }
