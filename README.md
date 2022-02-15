@@ -1,3 +1,3 @@
-# shardingsphere-feature-test
+# shardingsphere-test
 
-Unit test for shardingsphere features.
+Unit test for shardingsphere features and performance test.
