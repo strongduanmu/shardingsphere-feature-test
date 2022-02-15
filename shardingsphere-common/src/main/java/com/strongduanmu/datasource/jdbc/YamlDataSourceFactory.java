@@ -1,4 +1,4 @@
-package com.strongduanmu.datasource;
+package com.strongduanmu.datasource.jdbc;
 
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;

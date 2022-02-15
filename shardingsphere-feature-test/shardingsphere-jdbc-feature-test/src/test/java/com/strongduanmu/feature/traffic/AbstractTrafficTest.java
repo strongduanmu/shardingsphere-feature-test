@@ -1,7 +1,7 @@
 package com.strongduanmu.feature.traffic;
 
-import com.strongduanmu.datasource.SchemaFeatureType;
-import com.strongduanmu.datasource.YamlDataSourceFactory;
+import com.strongduanmu.datasource.jdbc.SchemaFeatureType;
+import com.strongduanmu.datasource.jdbc.YamlDataSourceFactory;
 import org.junit.After;
 import org.junit.Before;
 

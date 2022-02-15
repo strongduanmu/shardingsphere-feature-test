@@ -11,6 +11,8 @@
     <modules>
         <module>shardingsphere-feature-test</module>
         <module>shardingsphere-performance-test</module>
+        <module>shardingsphere-common</module>
+        <module>shardingsphere-common</module>
     </modules>
 
     <properties>

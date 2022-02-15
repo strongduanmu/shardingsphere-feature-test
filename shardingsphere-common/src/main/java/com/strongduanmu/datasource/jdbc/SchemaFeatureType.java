@@ -1,4 +1,4 @@
-package com.strongduanmu.datasource;
+package com.strongduanmu.datasource.jdbc;
 
 /**
  * Schema feature type.
