@@ -3,7 +3,6 @@ package com.strongduanmu.feature.traffic.transaction;
 import com.strongduanmu.feature.traffic.AbstractTrafficTest;
 import org.junit.Test;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
