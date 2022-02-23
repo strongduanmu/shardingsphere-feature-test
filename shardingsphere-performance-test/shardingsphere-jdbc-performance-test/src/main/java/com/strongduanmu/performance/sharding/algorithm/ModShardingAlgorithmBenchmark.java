@@ -50,12 +50,12 @@ public class ModShardingAlgorithmBenchmark {
     }
     
     @Benchmark
-    public void assertPreciseDoSharding() {
+    public void testPreciseDoSharding() {
         shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, 15));
     }
     
     @Benchmark
-    public void assertRangeDoSharding() {
+    public void testRangeDoSharding() {
         shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", DATA_NODE_PREFIX, Range.closed(11L, 12L)));
     }
     
