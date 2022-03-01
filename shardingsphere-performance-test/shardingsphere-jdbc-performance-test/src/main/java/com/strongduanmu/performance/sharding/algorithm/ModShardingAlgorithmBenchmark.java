@@ -1,8 +1,8 @@
 package com.strongduanmu.performance.sharding.algorithm;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.common.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class ModShardingAlgorithmBenchmark {
     
-    private static final DataNodeInfo DATA_NODE_PREFIX = new DataNodeInfo("t_order_", 1);
+    private static final DataNodeInfo DATA_NODE_PREFIX = new DataNodeInfo("t_order_", 1, '0');
     
     private ModShardingAlgorithm shardingAlgorithm;
     
