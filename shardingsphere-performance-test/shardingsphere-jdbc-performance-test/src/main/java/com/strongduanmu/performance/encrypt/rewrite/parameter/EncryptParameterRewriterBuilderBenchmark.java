@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -86,7 +87,8 @@ public class EncryptParameterRewriterBuilderBenchmark {
         metaDataMap.put("sharding_db", metaData);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, "sharding_db");
         Collection<WhereSegment> whereSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getWhereSegments() : Collections.emptyList();
-        Collection<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(whereSegments, sqlStatementContext.getTablesContext());
+        Collection<ColumnSegment> columnSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getColumnSegments() : Collections.emptyList();
+        Collection<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(whereSegments, columnSegments, sqlStatementContext.getTablesContext());
         parameterRewriterBuilder = new EncryptParameterRewriterBuilder(encryptRule, "sharding_db", schema, sqlStatementContext, encryptConditions);
         encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, sqlStatementContext, encryptConditions, "sharding_db");
     }
