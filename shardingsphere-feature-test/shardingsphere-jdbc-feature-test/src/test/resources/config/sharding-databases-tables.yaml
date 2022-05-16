@@ -69,3 +69,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+      
+props:
+  sql-show: true
