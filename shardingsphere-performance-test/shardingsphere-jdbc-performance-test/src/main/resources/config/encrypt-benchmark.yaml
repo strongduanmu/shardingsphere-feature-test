@@ -1,0 +1,67 @@
+schemaName: encrypt_db
+
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/ssencrypt?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
+    maximumPoolSize: 128
+    minimumIdle: 100
+rules:
+- !ENCRYPT
+  encryptors:
+    EMPTY_encryptor:
+      type: EMPTY
+  tables:
+    sbtest1:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest2:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest3:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest4:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest5:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest6:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest7:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest8:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest9:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor
+    sbtest10:
+      columns:
+        c:
+          cipherColumn: c
+          encryptorName: EMPTY_encryptor

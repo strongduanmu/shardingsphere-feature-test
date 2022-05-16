@@ -12,12 +12,15 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.parser.ParserConfiguration;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -47,8 +50,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.Collections.emptyList;
-
 /**
  * Encrypt parameter rewriter builder benchmark.
  */
@@ -74,22 +75,24 @@ public class EncryptParameterRewriterBuilderBenchmark {
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfiguration(tables, Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("AES", props))), Collections.emptyMap());
         ShardingSphereSchema schema = new ShardingSphereSchema();
         ColumnMetaData columnMetaData = new ColumnMetaData("encrypt_id", Types.INTEGER, false, false, false);
-        schema.put("t_encrypt", new TableMetaData("t_encrypt", Collections.singletonList(columnMetaData), emptyList()));
-        EncryptConditionEngine encryptConditionEngine = new EncryptConditionEngine(encryptRule, schema);
+        schema.put("t_encrypt", new TableMetaData("t_encrypt", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
+        EncryptConditionEngine encryptConditionEngine = new EncryptConditionEngine(encryptRule, schemas);
         CacheOption cacheOption = new CacheOption(65535, 2000, 4);
-        Optional<SQLParserRule> sqlParserRule = Optional.of(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", sqlParserRule.get());
+        ParserConfiguration parserConfiguration = new ParserConfiguration(cacheOption, cacheOption, false);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", parserConfiguration);
         String sql = "SELECT password FROM t_encrypt WHERE encrypt_id = ?";
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(1, 1);
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), null, null, DatabaseTypeRegistry.getTrunkDatabaseType("MySQL"));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", resource, null, schema);
+        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), null, null, databaseType);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", databaseType, resource, null, schemas);
         metaDataMap.put("sharding_db", metaData);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, "sharding_db");
         Collection<WhereSegment> whereSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getWhereSegments() : Collections.emptyList();
         Collection<ColumnSegment> columnSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getColumnSegments() : Collections.emptyList();
-        Collection<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(whereSegments, columnSegments, sqlStatementContext.getTablesContext());
-        parameterRewriterBuilder = new EncryptParameterRewriterBuilder(encryptRule, "sharding_db", schema, sqlStatementContext, encryptConditions);
+        Collection<EncryptCondition> encryptConditions = encryptConditionEngine.createEncryptConditions(whereSegments, columnSegments, sqlStatementContext, DefaultDatabase.LOGIC_NAME);
+        parameterRewriterBuilder = new EncryptParameterRewriterBuilder(encryptRule, "sharding_db", schemas, sqlStatementContext, encryptConditions);
         encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, sqlStatementContext, encryptConditions, "sharding_db");
     }
     

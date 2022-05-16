@@ -1,5 +1,6 @@
 package com.strongduanmu.performance.traffic.algorithm;
 
+import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.traffic.algorithm.traffic.hint.SQLHintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.algorithm.traffic.segment.SQLMatchTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.algorithm.traffic.segment.SQLRegexTrafficAlgorithm;
@@ -18,6 +19,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,6 +40,8 @@ public class TrafficAlgorithmCompareBenchmark {
     
     private SQLRegexTrafficAlgorithm sqlRegexAlgorithm;
     
+    private SQLHintProperties sqlHintProps;
+    
     @Setup(Level.Trial)
     public void setUp() {
         initSQLHintAlgorithm();
@@ -47,25 +51,29 @@ public class TrafficAlgorithmCompareBenchmark {
     
     private void initSQLRegexAlgorithm() {
         sqlRegexAlgorithm = new SQLRegexTrafficAlgorithm();
-        sqlRegexAlgorithm.getProps().setProperty("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
-        sqlRegexAlgorithm.init();
+        Properties props = sqlRegexAlgorithm.getProps();
+        props.setProperty("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
+        sqlRegexAlgorithm.init(props);
     }
     
     private void initSQLMatchAlgorithm() {
         sqlMatchAlgorithm = new SQLMatchTrafficAlgorithm();
-        sqlMatchAlgorithm.getProps().setProperty("sql", "SELECT * FROM t_order WHERE content IN (?, ?); UPDATE t_order SET creation_date = NOW() WHERE user_id = 1;");
-        sqlMatchAlgorithm.init();
+        Properties props = sqlMatchAlgorithm.getProps();
+        props.setProperty("sql", "SELECT * FROM t_order WHERE content IN (?, ?); UPDATE t_order SET creation_date = NOW() WHERE user_id = 1;");
+        sqlMatchAlgorithm.init(props);
     }
     
     private void initSQLHintAlgorithm() {
         sqlHintAlgorithm = new SQLHintTrafficAlgorithm();
-        sqlHintAlgorithm.getProps().setProperty("use_traffic", "true");
-        sqlHintAlgorithm.init();
+        sqlHintAlgorithm.init(new Properties());
+        Properties props = new Properties();
+        props.put("useTraffic", "true");
+        sqlHintProps = new SQLHintProperties(props);
     }
     
     @Benchmark
     public void testSQLHintAlgorithmMatch() {
-        sqlHintAlgorithm.match(new HintTrafficValue<>("/* shardingsphere hint:use_traffic=true */"));
+        sqlHintAlgorithm.match(new HintTrafficValue(sqlHintProps));
     }
     
     @Benchmark

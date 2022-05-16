@@ -2,9 +2,9 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:15432/demo_ds_0
-    username: root
-    password: 123456
+    url: jdbc:opengauss://localhost:15432/demo_ds_0
+    username: gaussdb
+    password: Sphere@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -13,9 +13,9 @@ dataSources:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:15432/demo_ds_1
-    username: root
-    password: 123456
+    url: jdbc:opengauss://localhost:15432/demo_ds_1
+    username: gaussdb
+    password: Sphere@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -69,38 +69,3 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-        worker-id: 123
-  
-  scalingName: default_scaling
-  scaling:
-    default_scaling:
-      input:
-        workerThread: 40
-        batchSize: 1000
-        rateLimiter:
-          type: QPS
-          props:
-            qps: 50
-      output:
-        workerThread: 40
-        batchSize: 1000
-        rateLimiter:
-          type: TPS
-          props:
-            tps: 2000
-      streamChannel:
-        type: MEMORY
-        props:
-          block-queue-size: 10000
-      completionDetector:
-        type: IDLE
-        props:
-          incremental-task-idle-minute-threshold: 30
-      dataConsistencyChecker:
-        type: DATA_MATCH
-        props:
-          chunk-size: 1000
-
-props:
-  sql-show: true

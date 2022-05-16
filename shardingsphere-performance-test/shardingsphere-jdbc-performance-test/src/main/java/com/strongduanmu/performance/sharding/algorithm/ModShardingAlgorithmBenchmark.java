@@ -21,6 +21,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,8 +45,9 @@ public class ModShardingAlgorithmBenchmark {
     @Setup(Level.Trial)
     public void setUp() {
         shardingAlgorithm = new ModShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("sharding-count", "16");
-        shardingAlgorithm.init();
+        Properties props = shardingAlgorithm.getProps();
+        props.setProperty("sharding-count", "16");
+        shardingAlgorithm.init(props);
         availableTargetNames = createAvailableTargetNames();
     }
     

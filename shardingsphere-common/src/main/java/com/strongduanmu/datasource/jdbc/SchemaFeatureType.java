@@ -23,6 +23,10 @@ public enum SchemaFeatureType {
     
     ENCRYPT,
     
+    ENCRYPT_BENCHMARK,
+    
+    SURSEN_ENCRYPT_BENCHMARK,
+    
     SHADOW,
     
     MODE_SHARDING_DATABASES_AND_TABLES

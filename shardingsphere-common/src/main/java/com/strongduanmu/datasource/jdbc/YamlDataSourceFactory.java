@@ -27,6 +27,8 @@ public final class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/replica-query.yaml"));
             case READ_WRITE_SPLITTING:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/readwrite-splitting-databases.yaml"));
+            case ENCRYPT_BENCHMARK:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/encrypt-benchmark.yaml"));
             case ENCRYPT:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/encrypt.yaml"));
             default:
