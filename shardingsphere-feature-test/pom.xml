@@ -11,6 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>shardingsphere-jdbc-feature-test</module>
+        <module>shardingsphere-proxy-feature-test</module>
     </modules>
 
     <artifactId>shardingsphere-feature-test</artifactId>

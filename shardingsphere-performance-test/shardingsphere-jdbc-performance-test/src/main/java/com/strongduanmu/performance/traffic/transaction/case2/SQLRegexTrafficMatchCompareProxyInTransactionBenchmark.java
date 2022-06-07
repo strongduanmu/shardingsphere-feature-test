@@ -46,7 +46,7 @@ public class SQLRegexTrafficMatchCompareProxyInTransactionBenchmark {
     @SneakyThrows
     @Setup(Level.Trial)
     public void setUp() {
-        DataSource proxyDataSource = HikariDataSourceFactory.newInstance("root", "root", "sharding_db");
+        DataSource proxyDataSource = HikariDataSourceFactory.newInstance("org.postgresql.Driver", "jdbc:postgresql://127.0.0.1:3307", "root", "root", "sharding_db");
         DataSource trafficDataSource = YamlDataSourceFactory.newInstance(SchemaFeatureType.MODE_SHARDING_DATABASES_AND_TABLES);
         proxyConnection = proxyDataSource.getConnection();
         trafficConnection = trafficDataSource.getConnection();

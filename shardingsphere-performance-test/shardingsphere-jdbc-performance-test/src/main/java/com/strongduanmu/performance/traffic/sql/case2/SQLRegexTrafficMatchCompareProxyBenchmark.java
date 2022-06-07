@@ -3,7 +3,6 @@ package com.strongduanmu.performance.traffic.sql.case2;
 import com.strongduanmu.datasource.jdbc.SchemaFeatureType;
 import com.strongduanmu.datasource.jdbc.YamlDataSourceFactory;
 import com.strongduanmu.datasource.proxy.HikariDataSourceFactory;
-import jdk.nashorn.internal.runtime.logging.Logger;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -49,7 +48,7 @@ public class SQLRegexTrafficMatchCompareProxyBenchmark {
     @SneakyThrows
     @Setup(Level.Trial)
     public void setUp() {
-        DataSource proxyDataSource = HikariDataSourceFactory.newInstance("root", "root", "sharding_db");
+        DataSource proxyDataSource = HikariDataSourceFactory.newInstance("org.postgresql.Driver", "jdbc:postgresql://127.0.0.1:3307", "root", "root", "sharding_db");
         DataSource trafficDataSource = YamlDataSourceFactory.newInstance(SchemaFeatureType.MODE_SHARDING_DATABASES_AND_TABLES);
         proxyConnection = proxyDataSource.getConnection();
         trafficConnection = trafficDataSource.getConnection();
