@@ -29,15 +29,15 @@ public class ShardingCursorSQLStatementTest {
     
     @Test
     public void testCursor() throws SQLException {
+//        for (int i = 16; i < 200000; i++) {
+//            executeTable(String.format("INSERT INTO t_order(order_id, user_id, content) VALUES(%s, %s, '%s');", i, new Random().nextInt(100), "TEST"), false);
+//        }
         connection.setAutoCommit(false);
-        executeCursor("CURSOR \"t_order_cursor\" WITHOUT HOLD FOR SELECT * FROM t_order WHERE order_id < 100 ORDER BY order_id;");
-        executeTable("FETCH 2 FROM \"t_order_cursor\";", true);
-        executeTable("FETCH ALL FROM \"t_order_cursor\";", true);
-        executeCursor("CURSOR \"t_order_cursor_2\" WITHOUT HOLD FOR SELECT * FROM t_order WHERE order_id < 100 ORDER BY order_id;");
-        executeTable("FETCH 2 FROM \"t_order_cursor_2\";", true);
-        executeTable("FETCH ALL FROM \"t_order_cursor_2\";", true);
+        executeCursor("CURSOR \"t_order_cursor\" WITHOUT HOLD FOR SELECT * FROM t_order ORDER BY order_id;");
+        for (int i = 16; i < 267911; i++) {
+            executeTable("FETCH \"t_order_cursor\";", true);
+        }
         executeTable("CLOSE \"t_order_cursor\";", false);
-        executeTable("CLOSE \"t_order_cursor_2\";", false);
         connection.commit();
     }
     
