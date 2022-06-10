@@ -22,7 +22,7 @@ public class ProxyTrafficTest extends AbstractTrafficTest {
     
     @Test
     public void testProxyTrafficWhenUseStatementAlgorithmMatch() throws SQLException {
-        String sql = "/* shardingsphere hint:use_traffic=true */UPDATE t_order SET content = CONCAT(content, '999') WHERE content = 'test1' AND user_id = 1;";
+        String sql = "/* shardingsphere hint:useTraffic=true */UPDATE t_order SET content = CONCAT(content, '999') WHERE content = 'test1' AND user_id = 1;";
         setAutoCommit(false);
         getStatement().execute(sql);
         getStatement().execute(sql);

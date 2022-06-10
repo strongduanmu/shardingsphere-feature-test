@@ -20,7 +20,7 @@ public class SQLHintTrafficTest extends AbstractTrafficTest {
     
     @Test
     public void testSQLHintTrafficWhenUsePreparedStatementAlgorithmMatch() throws SQLException {
-        String sql = "/* shardingsphere hint:use_traffic=true */SELECT * FROM t_order WHERE content IN (?, ?) AND user_id = 1";
+        String sql = "/* shardingsphere hint:useTraffic=true */SELECT * FROM t_order WHERE content IN (?, ?) AND user_id = 1";
         PreparedStatement statement = getPreparedStatement(sql, Arrays.asList("test1", "test10"));
         statement.executeQuery();
         ResultSet resultSet = statement.getResultSet();
@@ -56,7 +56,7 @@ public class SQLHintTrafficTest extends AbstractTrafficTest {
     
     @Test
     public void testSQLHintTrafficWhenUseStatementAlgorithmMatch() throws SQLException {
-        String sql = "/* shardingsphere hint:use_traffic=true */UPDATE t_order SET content = CONCAT(content, '999') WHERE content = '111' AND user_id = 1;";
+        String sql = "/* shardingsphere hint:useTraffic=true */UPDATE t_order SET content = CONCAT(content, '999') WHERE content = '111' AND user_id = 1;";
         getStatement().execute(sql);
     }
     

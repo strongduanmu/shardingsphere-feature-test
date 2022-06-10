@@ -13,7 +13,7 @@ public class JDBCTrafficTest extends AbstractTrafficTest {
     
     @Test
     public void testJDBCTrafficWhenUsePreparedStatementAlgorithmMatch() throws SQLException {
-        String sql1 = "/* shardingsphere hint:use_traffic=true */SELECT * FROM t_order WHERE content IN (?, ?) AND user_id = 1";
+        String sql1 = "/* shardingsphere hint:useTraffic=true */SELECT * FROM t_order WHERE content IN (?, ?) AND user_id = 1";
         String sql2 = "SELECT * FROM t_order WHERE content IN (?, ?) AND user_id = 1";
         setAutoCommit(false);
         getPreparedStatement(sql1, Arrays.asList("test1", "test10")).executeQuery();
@@ -23,7 +23,7 @@ public class JDBCTrafficTest extends AbstractTrafficTest {
     
     @Test
     public void testJDBCTrafficWhenUseStatementAlgorithmMatch() throws SQLException {
-        String sql1 = "/* shardingsphere hint:use_traffic=true */SELECT * FROM t_order WHERE content IN ('test1', 'test10') AND user_id = 1";
+        String sql1 = "/* shardingsphere hint:useTraffic=true */SELECT * FROM t_order WHERE content IN ('test1', 'test10') AND user_id = 1";
         String sql2 = "SELECT * FROM t_order WHERE content IN ('test1', 'test10') AND user_id = 1";
         setAutoCommit(false);
         getStatement().execute(sql1);

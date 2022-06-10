@@ -49,7 +49,7 @@ public class SQLHintTrafficNotMatchCompareJDBCInTransactionBenchmark {
         DataSource trafficDataSource = YamlDataSourceFactory.newInstance(SchemaFeatureType.MODE_SHARDING_DATABASES_AND_TABLES);
         jdbcConnection = jdbcDataSource.getConnection();
         trafficConnection = trafficDataSource.getConnection();
-        String sql = "/* shardingsphere hint:use_traffic=false */SELECT * FROM t_order WHERE content IN (?, ?) AND user_id = 1";
+        String sql = "/* shardingsphere hint:useTraffic=false */SELECT * FROM t_order WHERE content IN (?, ?) AND user_id = 1";
         jdbcPreparedStatement = jdbcConnection.prepareStatement(sql);
         trafficPreparedStatement = trafficConnection.prepareStatement(sql);
     }
