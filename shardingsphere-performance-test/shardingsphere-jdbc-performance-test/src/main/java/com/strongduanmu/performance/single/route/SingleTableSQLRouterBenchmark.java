@@ -7,12 +7,11 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.route.SingleTableSQLRouter;
@@ -56,9 +55,9 @@ public class SingleTableSQLRouterBenchmark {
     
     private LogicSQL logicSQL;
     
-    private ShardingSphereMetaData singleDataSourceMetaData;
+    private ShardingSphereDatabase singleDataSourceDatabase;
     
-    private ShardingSphereMetaData multiDataSourceMetaData;
+    private ShardingSphereDatabase multiDataSourceDatabase;
     
     private SingleTableRule rule;
     
@@ -67,25 +66,22 @@ public class SingleTableSQLRouterBenchmark {
     @Setup(Level.Trial)
     public void setUp() {
         singleTableSQLRouter = new SingleTableSQLRouter();
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(1, 1);
+        Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>(1, 1);
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        ColumnMetaData columnMetaData = new ColumnMetaData("single_id", Types.INTEGER, false, false, false);
-        schema.put("t_single", new TableMetaData("t_single", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("single_id", Types.INTEGER, false, false, false);
+        schema.put("t_single", new ShardingSphereTable("t_single", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
-        singleDataSourceMetaData = new ShardingSphereMetaData("sharding_db", databaseType, 
-                new ShardingSphereResource(createSingleDataSource(), null, null, databaseType), null, schemas);
-        multiDataSourceMetaData = new ShardingSphereMetaData("sharding_db", databaseType, 
-                new ShardingSphereResource(createMultiDataSource(), null, null, databaseType), null, schemas);
-        metaDataMap.put("sharding_db", singleDataSourceMetaData);
-        CacheOption cacheOption = new CacheOption(65535, 2000, 4);
-        ParserConfiguration parserConfiguration = new ParserConfiguration(cacheOption, cacheOption, false);
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", parserConfiguration);
+        singleDataSourceDatabase = new ShardingSphereDatabase("sharding_db", databaseType, new ShardingSphereResource(createSingleDataSource()), null, schemas);
+        multiDataSourceDatabase = new ShardingSphereDatabase("sharding_db", databaseType, new ShardingSphereResource(createMultiDataSource()), null, schemas);
+        databaseMap.put("sharding_db", singleDataSourceDatabase);
+        CacheOption cacheOption = new CacheOption(65535, 2000);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", cacheOption, cacheOption, false);
         String sql = "SELECT * FROM t_single";
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
-        logicSQL = new LogicSQL(SQLStatementContextFactory.newInstance(metaDataMap, sqlStatement, "sharding_db"), sql, Collections.emptyList());
+        logicSQL = new LogicSQL(SQLStatementContextFactory.newInstance(databaseMap, sqlStatement, "sharding_db"), sql, Collections.emptyList());
         props = new ConfigurationProperties(new Properties());
-        rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptyMap(), Collections.emptyList(), props);
+        rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyList());
         rule.getSingleTableDataNodes().put("t_single", Collections.singletonList(new DataNode("ds_0", "t_single")));
     }
     
@@ -104,11 +100,11 @@ public class SingleTableSQLRouterBenchmark {
     
     @Benchmark
     public void testCreateRouteContextWithSingleDataSource() {
-        singleTableSQLRouter.createRouteContext(logicSQL, singleDataSourceMetaData, rule, props);
+        singleTableSQLRouter.createRouteContext(logicSQL, singleDataSourceDatabase, rule, props);
     }
     
     @Benchmark
     public void testCreateRouteContextWithMultiDataSource() {
-        singleTableSQLRouter.createRouteContext(logicSQL, multiDataSourceMetaData, rule, props);
+        singleTableSQLRouter.createRouteContext(logicSQL, multiDataSourceDatabase, rule, props);
     }
 }

@@ -9,12 +9,11 @@ import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -60,21 +59,20 @@ public class EncryptConditionEngineBenchmark {
     
     @Setup(Level.Trial)
     public void setUp() {
-        EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfiguration(emptyList(), Collections.emptyMap()), Collections.emptyMap());
+        EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfiguration(emptyList(), Collections.emptyMap()));
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        ColumnMetaData columnMetaData = new ColumnMetaData("encrypt_id", Types.INTEGER, false, false, false);
-        schema.put("t_encrypt", new TableMetaData("t_encrypt", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("encrypt_id", Types.INTEGER, false, false, false);
+        schema.put("t_encrypt", new ShardingSphereTable("t_encrypt", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
         encryptConditionEngine = new EncryptConditionEngine(encryptRule, schemas);
-        CacheOption cacheOption = new CacheOption(65535, 2000, 4);
-        ParserConfiguration parserConfiguration = new ParserConfiguration(cacheOption, cacheOption, false);
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", parserConfiguration);
+        CacheOption cacheOption = new CacheOption(65535, 2000);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", cacheOption, cacheOption, false);
         String sql = "SELECT * FROM t_encrypt WHERE encrypt_id = ?";
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(1, 1);
+        Map<String, ShardingSphereDatabase> metaDataMap = new HashMap<>(1, 1);
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), null, null, databaseType);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", databaseType, resource, null, schemas);
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap());
+        ShardingSphereDatabase metaData = new ShardingSphereDatabase("sharding_db", databaseType, resource, null, schemas);
         metaDataMap.put("sharding_db", metaData);
         sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, "sharding_db");
     }

@@ -18,8 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.11</junit.version>
         <lombok.version>1.16.20</lombok.version>
-        <!--<shardingsphere.version>5.1.2-SNAPSHOT</shardingsphere.version>-->
-        <shardingsphere.version>5.1.1</shardingsphere.version>
+        <shardingsphere.version>5.1.3-SNAPSHOT</shardingsphere.version>
         <slf4j.version>1.7.7</slf4j.version>
         <mockito.version>3.4.2</mockito.version>
         <logback.version>1.2.0</logback.version>

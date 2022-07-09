@@ -1,6 +1,7 @@
 package com.strongduanmu.performance.traffic.algorithm;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.traffic.algorithm.loadbalance.RoundRobinTrafficLoadBalanceAlgorithm;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -33,18 +34,18 @@ public class RoundRobinTrafficLoadBalanceAlgorithmBenchmark {
     
     private RoundRobinTrafficLoadBalanceAlgorithm loadBalanceAlgorithm;
     
-    private List<InstanceId> instanceIds;
+    private List<InstanceMetaData> instanceMetaDataList;
     
     @Setup(Level.Trial)
     public void setUp() {
         loadBalanceAlgorithm = new RoundRobinTrafficLoadBalanceAlgorithm();
-        InstanceId instanceId1 = new InstanceId("127.0.0.1@3307");
-        InstanceId instanceId2 = new InstanceId("127.0.0.1@3308");
-        instanceIds = Arrays.asList(instanceId1, instanceId2);
+        InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("a", "127.0.0.1@3307");
+        InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("b", "127.0.0.1@3308");
+        instanceMetaDataList = Arrays.asList(instanceMetaData1, instanceMetaData2);
     }
     
     @Benchmark
     public void testGetInstanceId() {
-        loadBalanceAlgorithm.getInstanceId("traffic", instanceIds);
+        loadBalanceAlgorithm.getInstanceId("traffic", instanceMetaDataList);
     }
 }

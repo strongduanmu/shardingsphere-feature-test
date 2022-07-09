@@ -11,12 +11,11 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -63,14 +62,14 @@ public class EncryptPredicateColumnTokenGeneratorBenchmark {
     public void setUp() {
         EncryptRule encryptRule = createEncryptRule();
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        ColumnMetaData columnMetaData = new ColumnMetaData("encrypt_id", Types.INTEGER, false, false, false);
-        schema.put("t_encrypt", new TableMetaData("t_encrypt", Collections.singletonList(columnMetaData), emptyList(), Collections.emptyList()));
+        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("encrypt_id", Types.INTEGER, false, false, false);
+        schema.put("t_encrypt", new ShardingSphereTable("t_encrypt", Collections.singletonList(columnMetaData), emptyList(), Collections.emptyList()));
         SQLStatement sqlStatement = createSqlStatement();
-        Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(1, 1);
+        Map<String, ShardingSphereDatabase> metaDataMap = new HashMap<>(1, 1);
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap(), null, null, databaseType);
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap());
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData("sharding_db", databaseType, resource, null, schemas);
+        ShardingSphereDatabase metaData = new ShardingSphereDatabase("sharding_db", databaseType, resource, null, schemas);
         metaDataMap.put("sharding_db", metaData);
         sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, "sharding_db");
         tokenGenerator = new EncryptPredicateColumnTokenGenerator();
@@ -79,19 +78,18 @@ public class EncryptPredicateColumnTokenGeneratorBenchmark {
     }
     
     private SQLStatement createSqlStatement() {
-        CacheOption cacheOption = new CacheOption(65535, 2000, 4);
-        ParserConfiguration parserConfiguration = new ParserConfiguration(cacheOption, cacheOption, false);
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", parserConfiguration);
+        CacheOption cacheOption = new CacheOption(65535, 2000);
+        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", cacheOption, cacheOption, false);
         String sql = "SELECT password FROM t_encrypt WHERE encrypt_id = ?";
         return sqlParserEngine.parse(sql, true);
     }
     
     private EncryptRule createEncryptRule() {
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("password", "password", null, null, "TEST"));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("password", "password", null, null, "TEST", true));
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, true));
         Properties props = new Properties();
         props.setProperty("aes-key-value", "test13123");
-        return new EncryptRule(new EncryptRuleConfiguration(tables, Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("AES", props))), Collections.emptyMap());
+        return new EncryptRule(new EncryptRuleConfiguration(tables, Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("AES", props))));
     }
     
     @Benchmark
