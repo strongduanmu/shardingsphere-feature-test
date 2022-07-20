@@ -1,4 +1,4 @@
-schemaName: sharding_db
+databaseName: sharding_db
 
 mode:
   type: Cluster

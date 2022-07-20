@@ -1,10 +1,14 @@
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.postgresql.Driver
-    url: jdbc:opengauss://localhost:15432/demo_ds_0
-    username: gaussdb
-    password: Sphere@123
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:opengauss://localhost:15432/demo_ds_0
+#    username: gaussdb
+#    password: Sphere@123
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -12,10 +16,14 @@ dataSources:
     minPoolSize: 1
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.postgresql.Driver
-    url: jdbc:opengauss://localhost:15432/demo_ds_1
-    username: gaussdb
-    password: Sphere@123
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:opengauss://localhost:15432/demo_ds_1
+#    username: gaussdb
+#    password: Sphere@123
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -34,6 +42,10 @@ rules:
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
+      auditStrategy:
+        auditorNames:
+          - sharding_key_required_auditor
+        allowHintDisable: true
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -51,6 +63,10 @@ rules:
       shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
+  defaultAuditStrategy:
+    auditorNames:
+      - sharding_key_required_auditor
+    allowHintDisable: true
   
   shardingAlgorithms:
     database_inline:
@@ -69,6 +85,7 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      
-props:
-  sql-show: true
+  
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS

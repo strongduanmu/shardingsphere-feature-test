@@ -1,4 +1,4 @@
-package com.strongduanmu.feature.readwritesplitting.generatedkey;
+package com.strongduanmu.feature.sharding.generatedkey;
 
 import com.strongduanmu.datasource.jdbc.SchemaFeatureType;
 import com.strongduanmu.datasource.jdbc.YamlDataSourceFactory;
@@ -18,16 +18,16 @@ import java.sql.Statement;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Readwrite splitting generated key test.
+ * Sharding generated key test.
  */
 @Slf4j
-public class ReadwriteSplittingGeneratedKeyTest {
+public class ShardingGeneratedKeyTest {
     
     private Connection connection;
     
     @Before
     public void setUp() throws SQLException, IOException {
-        DataSource dataSource = YamlDataSourceFactory.newInstance(SchemaFeatureType.READ_WRITE_SPLITTING);
+        DataSource dataSource = YamlDataSourceFactory.newInstance(SchemaFeatureType.SHARDING_DATABASES_AND_TABLES);
         connection = dataSource.getConnection();
     }
     
@@ -36,7 +36,7 @@ public class ReadwriteSplittingGeneratedKeyTest {
         String sql = "INSERT INTO t_order(user_id, content) VALUES(?, ?);";
         PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         for (int index = 0; index < 3; index++) {
-            assertGeneratedKey(preparedStatement, index);   
+            assertGeneratedKey(preparedStatement, index);
         }
     }
     
