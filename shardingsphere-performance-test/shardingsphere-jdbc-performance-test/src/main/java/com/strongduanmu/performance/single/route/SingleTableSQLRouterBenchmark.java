@@ -1,14 +1,15 @@
 package com.strongduanmu.performance.single.route;
 
-import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -53,7 +54,7 @@ public class SingleTableSQLRouterBenchmark {
     
     private SingleTableSQLRouter singleTableSQLRouter;
     
-    private LogicSQL logicSQL;
+    private QueryContext logicSQL;
     
     private ShardingSphereDatabase singleDataSourceDatabase;
     
@@ -69,17 +70,17 @@ public class SingleTableSQLRouterBenchmark {
         Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>(1, 1);
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("single_id", Types.INTEGER, false, false, false);
-        schema.put("t_single", new ShardingSphereTable("t_single", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("single_id", Types.INTEGER, false, false, false, true);
+        schema.putTable("t_single", new ShardingSphereTable("t_single", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
-        singleDataSourceDatabase = new ShardingSphereDatabase("sharding_db", databaseType, new ShardingSphereResource(createSingleDataSource()), null, schemas);
-        multiDataSourceDatabase = new ShardingSphereDatabase("sharding_db", databaseType, new ShardingSphereResource(createMultiDataSource()), null, schemas);
+        singleDataSourceDatabase = new ShardingSphereDatabase("sharding_db", databaseType, new ShardingSphereResourceMetaData("sharding_db", createSingleDataSource()), null, schemas);
+        multiDataSourceDatabase = new ShardingSphereDatabase("sharding_db", databaseType, new ShardingSphereResourceMetaData("sharding_db", createMultiDataSource()), null, schemas);
         databaseMap.put("sharding_db", singleDataSourceDatabase);
         CacheOption cacheOption = new CacheOption(65535, 2000);
         ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine("MySQL", cacheOption, cacheOption, false);
         String sql = "SELECT * FROM t_single";
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
-        logicSQL = new LogicSQL(SQLStatementContextFactory.newInstance(databaseMap, sqlStatement, "sharding_db"), sql, Collections.emptyList());
+        logicSQL = new QueryContext(SQLStatementContextFactory.newInstance(databaseMap, sqlStatement, "sharding_db"), sql, Collections.emptyList());
         props = new ConfigurationProperties(new Properties());
         rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, Collections.emptyMap(), Collections.emptyList());
         rule.getSingleTableDataNodes().put("t_single", Collections.singletonList(new DataNode("ds_0", "t_single")));
@@ -100,11 +101,11 @@ public class SingleTableSQLRouterBenchmark {
     
     @Benchmark
     public void testCreateRouteContextWithSingleDataSource() {
-        singleTableSQLRouter.createRouteContext(logicSQL, singleDataSourceDatabase, rule, props);
+        singleTableSQLRouter.createRouteContext(logicSQL, singleDataSourceDatabase, rule, props, new ConnectionContext());
     }
     
     @Benchmark
     public void testCreateRouteContextWithMultiDataSource() {
-        singleTableSQLRouter.createRouteContext(logicSQL, multiDataSourceDatabase, rule, props);
+        singleTableSQLRouter.createRouteContext(logicSQL, multiDataSourceDatabase, rule, props, new ConnectionContext());
     }
 }

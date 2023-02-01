@@ -1,0 +1,44 @@
+databaseName: GTCRCOA
+
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521:XE
+    username: TEST
+    password: 123456
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: dm.jdbc.driver.DmDriver
+    url: jdbc:dm://localhost:5236/
+    username: SYSDBA
+    password: SYSDBA001
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
+rules:
+- !DUAL_WRITE
+  dataSources:
+    dual_write_ds:
+      writeDataSourceNames:
+        - ds_0
+        - ds_1
+      readDataSourceNames:
+        - ds_0
+        - ds_1
+      loadBalancerName: random
+  loadBalancers:
+    random:
+      type: RANDOM
+
+props:
+  sql-show: true
+#  proxy-frontend-database-protocol-type: DM

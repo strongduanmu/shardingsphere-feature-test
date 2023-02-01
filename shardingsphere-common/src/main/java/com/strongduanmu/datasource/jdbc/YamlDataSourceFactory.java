@@ -31,6 +31,8 @@ public final class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/encrypt-benchmark.yaml"));
             case ENCRYPT:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/encrypt.yaml"));
+            case DUAL_WRITE:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/config/dual-write.yaml"));
             default:
                 throw new UnsupportedOperationException(schemaFeatureType.name());
         }

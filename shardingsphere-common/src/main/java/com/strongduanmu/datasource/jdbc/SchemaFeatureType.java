@@ -21,6 +21,8 @@ public enum SchemaFeatureType {
     
     READ_WRITE_SPLITTING,
     
+    DUAL_WRITE,
+    
     ENCRYPT,
     
     ENCRYPT_BENCHMARK,

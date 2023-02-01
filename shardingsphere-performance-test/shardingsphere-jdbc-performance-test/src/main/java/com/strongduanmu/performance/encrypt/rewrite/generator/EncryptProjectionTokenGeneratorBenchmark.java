@@ -7,12 +7,12 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjecti
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -60,12 +60,12 @@ public class EncryptProjectionTokenGeneratorBenchmark {
     public void setUp() {
         EncryptRule encryptRule = createEncryptRule();
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("encrypt_id", Types.INTEGER, false, false, false);
-        schema.put("t_encrypt", new ShardingSphereTable("t_encrypt", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("encrypt_id", Types.INTEGER, false, false, false, true);
+        schema.putTable("t_encrypt", new ShardingSphereTable("t_encrypt", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
         SQLStatement sqlStatement = createSqlStatement();
         Map<String, ShardingSphereDatabase> metaDataMap = new HashMap<>(1, 1);
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap());
+        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", Collections.emptyMap());
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
         ShardingSphereDatabase metaData = new ShardingSphereDatabase("sharding_db", databaseType, resource, null, schemas);
         metaDataMap.put("sharding_db", metaData);
@@ -87,7 +87,7 @@ public class EncryptProjectionTokenGeneratorBenchmark {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, true));
         Properties props = new Properties();
         props.setProperty("aes-key-value", "test13123");
-        return new EncryptRule(new EncryptRuleConfiguration(tables, Collections.singletonMap("TEST", new ShardingSphereAlgorithmConfiguration("AES", props))));
+        return new EncryptRule(new EncryptRuleConfiguration(tables, Collections.singletonMap("TEST", new AlgorithmConfiguration("AES", props))));
     }
     
     @Benchmark

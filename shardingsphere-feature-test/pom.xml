@@ -12,6 +12,7 @@
     <modules>
         <module>shardingsphere-jdbc-feature-test</module>
         <module>shardingsphere-proxy-feature-test</module>
+        <module>dbplusengine-jdbc-feature-test</module>
     </modules>
 
     <artifactId>shardingsphere-feature-test</artifactId>

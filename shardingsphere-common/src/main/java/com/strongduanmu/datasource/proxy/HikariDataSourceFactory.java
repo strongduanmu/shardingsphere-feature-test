@@ -23,7 +23,7 @@ public class HikariDataSourceFactory {
         result.setUsername(userName);
         result.setPassword(password);
         result.setDriverClassName(driver);
-        result.setJdbcUrl(urlPrefix + "/" + database);
+        result.setJdbcUrl(urlPrefix + "/" + database + "?serverTimezone=UTC&useSSL=false");
         result.setMaximumPoolSize(10);
         result.setMinimumIdle(1);
         result.setIdleTimeout(2000);

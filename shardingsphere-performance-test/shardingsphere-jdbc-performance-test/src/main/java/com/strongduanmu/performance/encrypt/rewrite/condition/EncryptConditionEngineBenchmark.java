@@ -10,7 +10,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -61,8 +61,8 @@ public class EncryptConditionEngineBenchmark {
     public void setUp() {
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfiguration(emptyList(), Collections.emptyMap()));
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("encrypt_id", Types.INTEGER, false, false, false);
-        schema.put("t_encrypt", new ShardingSphereTable("t_encrypt", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereColumn columnMetaData = new ShardingSphereColumn("encrypt_id", Types.INTEGER, false, false, false, true);
+        schema.putTable("t_encrypt", new ShardingSphereTable("t_encrypt", Collections.singletonList(columnMetaData), Collections.emptyList(), Collections.emptyList()));
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema);
         encryptConditionEngine = new EncryptConditionEngine(encryptRule, schemas);
         CacheOption cacheOption = new CacheOption(65535, 2000);
@@ -71,7 +71,7 @@ public class EncryptConditionEngineBenchmark {
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
         Map<String, ShardingSphereDatabase> metaDataMap = new HashMap<>(1, 1);
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType("MySQL");
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.emptyMap());
+        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", Collections.emptyMap());
         ShardingSphereDatabase metaData = new ShardingSphereDatabase("sharding_db", databaseType, resource, null, schemas);
         metaDataMap.put("sharding_db", metaData);
         sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataMap, Collections.emptyList(), sqlStatement, "sharding_db");

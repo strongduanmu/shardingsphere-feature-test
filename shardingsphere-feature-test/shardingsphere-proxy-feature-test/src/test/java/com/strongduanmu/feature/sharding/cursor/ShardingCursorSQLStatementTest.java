@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Random;
 
 /**
  * Sharding cursor sql statement test.
@@ -29,9 +30,9 @@ public class ShardingCursorSQLStatementTest {
     
     @Test
     public void testCursor() throws SQLException {
-//        for (int i = 16; i < 200000; i++) {
-//            executeTable(String.format("INSERT INTO t_order(order_id, user_id, content) VALUES(%s, %s, '%s');", i, new Random().nextInt(100), "TEST"), false);
-//        }
+        for (int i = 16; i < 200000; i++) {
+            executeTable(String.format("INSERT INTO t_order(order_id, user_id, content) VALUES(%s, %s, '%s');", i, new Random().nextInt(100), "TEST"), false);
+        }
         connection.setAutoCommit(false);
         executeCursor("CURSOR \"t_order_cursor\" WITHOUT HOLD FOR SELECT * FROM t_order ORDER BY order_id;");
         for (int i = 16; i < 267911; i++) {
